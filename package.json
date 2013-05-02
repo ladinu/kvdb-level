@@ -1,0 +1,27 @@
+{
+  "name": "kvdb-level",
+  "version": "0.0.0",
+  "description": "LevelDB backend for kvdb",
+  "main": "index.js",
+  "dependencies": {
+    "levelup": "~0.8.0"
+  },
+  "devDependencies": {
+    "mocha":"~1.8.2"
+  },
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ladinu/kvdb-level.git"
+  },
+  "keywords": [
+    "kvdb",
+    "kvdb backend",
+    "leveldb"
+  ],
+  "author": "Ladinu Chandrasinghe",
+  "license": "MIT",
+  "readmeFilename": "README.md",
+}
