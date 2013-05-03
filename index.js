@@ -1,6 +1,8 @@
+var util    = require('util');
+var path    = require('path');
+var events  = require('events');
 var levelup = require('levelup');
 var uuid    = require('uuid');
-var path    = require('path');
 
 
 function someDBName(cwd) {
@@ -10,13 +12,29 @@ function someDBName(cwd) {
 }
 
 function Leveldb(options) {
-  var cwd    = options.cwd    || __dirname;
-  var dbname = options.dbname || someDBName(cwd);
-  var db     = levelup(dbname);
+  events.EventEmitter.call(this);
+  var self = this;
+
+  var options = options        || {};
+  var cwd     = options.cwd    || __dirname;
+  var dbname  = options.dbname || someDBName(cwd);
+
+  self.db;
+  
+  levelup(dbname, options, function(err, db) {
+    if (err) { 
+      self.emit('error', err);
+    } else {
+      self.db = db;
+      self.emit("ready");
+    }
+  });
 }
 
+util.inherits(Leveldb, events.EventEmitter);
+
 Leveldb.prototype.get = function(key, options, callback) {
-  if (callback {
+  if (callback) {
     this.store.get(key, callback);
   } else { // Return a stream
     return this.store.get(key);
