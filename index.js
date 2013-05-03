@@ -19,11 +19,12 @@ function Leveldb(options) {
   var cwd     = options.cwd    || __dirname;
   var dbname  = options.dbname || someDBName(cwd);
 
+  self.dbname = dbname;
   self.db;
   
   levelup(dbname, options, function(err, db) {
     if (err) { 
-      self.emit('error', err);
+      self.emit("error", err);
     } else {
       self.db = db;
       self.emit("ready");

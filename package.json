@@ -11,10 +11,10 @@
     "uuid": "~1.4.1"
   },
   "devDependencies": {
-    "tap": "~0.4.0"
+    "mocha": "*"
   },
   "scripts": {
-    "test": "tap ./test"
+    "test": "make test"
   },
   "repository": {
     "type": "git",
