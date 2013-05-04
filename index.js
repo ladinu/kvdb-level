@@ -23,10 +23,10 @@ function Leveldb(options) {
   
   levelup(dbname, options, function(err, db) {
     if (err) { 
-      self.emit("error", err);
+      self.emit('error', err);
     } else {
       self.db = db;
-      self.emit("ready");
+      self.emit('ready');
     }
   });
 }

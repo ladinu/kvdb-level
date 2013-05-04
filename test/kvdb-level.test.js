@@ -4,69 +4,67 @@ var uuid      = require('uuid');
 var levelup   = require('levelup');
 var store     = require('../');
 
-function log() {
+var log = function() {
   var args = Array.prototype.slice.call(arguments);
   console.log.apply(this, ["DEBUG: "].concat(args));
 }
 
 
-function getName(name) {
+var getName = function(name) {
   return path.join(__dirname, name);
+}
+
+var removeDb = function(db, done) {
+  function afterClosing(err) {
+    if (err)
+      done(err);
+    else
+      levelup.destroy(db.dbname, done);
+  }
+  db.db.close(afterClosing);
 }
 
 describe("store()", function() {
 
   it("should create a db", function(done) {
-
-    var dbname  = getName('db/test1');
-    log(dbname);
-    var db = store({ 'dbname': dbname});
+    var dbname = getName('db/test1');
+    var db     = store({ 'dbname': dbname});
     
     db.on('ready', function() {
-      function whenClosed(err) {
-        if (!err) {
-          levelup.destroy(dbname, done);
-        } else {
-          done(err);
-        }
-      }
       assert.ok(db.db.isOpen);
-      db.db.close(whenClosed);
+      removeDb(db, done);
     });
 
-    db.on('error', function(err) {
-      done(err);
-    });
+    db.on('error', done);
   });
-
-  it.skip("should create db with specified name", function() {
-    throw new Error("IMPLEMENT");
-  });
-
-  it.skip("should create a db when no name is given", function() {
-    throw new Error("IMPLEMENT");
-  });
-
-  it.skip("should create a db in specefied path", function() {
-    throw new Error("IMPLEMENT");
-  });
-
-  it.skip("should create a db in cwd when path not given", function() {
-    throw new Error("IMPLEMENT");
-  });
-
 });
 
-describe.skip("#put", function() {
-  it("should store data", function() {
-    throw new Error("IMPLEMENT");
+describe("#put", function(done) {
+  var db;
+  before(function(done) {
+    db = store( {'dbname': getName('db/test2')} );
+    db.on('error', done);
+    db.on('ready', done);
   });
 
-  it("should store piped data", function() {
-    throw new Error("IMPLEMENT");
+  after(function(done) {
+    removeDb(db, done);
+  })
+
+  it("should store data", function(done) {
+    done();
   });
 
-  it("should throw errors by callback or streams", function() {
-    throw new Error("IMPLEMENT");
+  it.skip("should store piped data", function() {
   });
+
+  it.skip("should throw errors with callback", function() {
+  });
+
+  it.skip("should throw errors with pipes", function() {
+  });
+});
+
+describe.skip("#get", function() {
+
 });
