@@ -1,4 +1,5 @@
 var assert    = require('assert');
+var path      = require('path');
 var uuid      = require('uuid');
 var levelup   = require('levelup');
 var test      = require('tap').test;
@@ -10,15 +11,29 @@ function log() {
 }
 
 
+function getName(name) {
+  return path.join(__dirname, name);
+}
 
-describe("ctor", function() {
+describe("store()", function() {
 
   it("should create a db", function(done) {
-    var db = store( {'dbpath': process.cwd()} );
+
+    var dbname  = getName('db/test1');
+    log(dbname);
+    var db = store({ 'dbname': dbname});
     
     db.on('ready', function() {
-      done(assert.ok(db.db.isOpen));
-    })
+      function whenClosed(err) {
+        if (!err) {
+          levelup.destroy(dbname, done);
+        } else {
+          done(err);
+        }
+      }
+      assert.ok(db.db.isOpen);
+      db.db.close(whenClosed);
+    });
 
     db.on('error', function(err) {
       done(err);

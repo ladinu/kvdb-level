@@ -5,10 +5,10 @@ var levelup = require('levelup');
 var uuid    = require('uuid');
 
 
-function someDBName(cwd) {
+function someDBName() {
   var dbname = uuid.v4(null, new Buffer(16), 0);
   dbname     = uuid.unparse(dbname) + '/';
-  return path.join(cwd, dbname);
+  return path.join(__dirname, dbname);
 }
 
 function Leveldb(options) {
@@ -16,8 +16,7 @@ function Leveldb(options) {
   var self = this;
 
   var options = options        || {};
-  var cwd     = options.cwd    || __dirname;
-  var dbname  = options.dbname || someDBName(cwd);
+  var dbname  = options.dbname || someDBName();
 
   self.dbname = dbname;
   self.db;
