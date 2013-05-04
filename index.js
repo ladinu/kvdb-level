@@ -35,25 +35,30 @@ util.inherits(Leveldb, events.EventEmitter);
 
 Leveldb.prototype.get = function(key, options, callback) {
   if (callback) {
-    this.store.get(key, callback);
+    this.db.get(key, callback);
   } else { // Return a stream
-    return this.store.get(key);
+    return this.db.get(key);
   }
 }
 
 Leveldb.prototype.put = function(key, value, options, callback) {
+  if (typeof(options) === 'function')
+    callback = options;
+
   if (callback) {
-    this.store.put(key, value, callback);
+    this.db.put(key, value, options, callback);
   } else {
-    return this.store.put(key);
+    console.log(callback);
+    return this.db.put(key);
   }
 }
 
 Leveldb.prototype.del = function(key, options, callback) {
-  this.store.del(key, callback);
+  this.db.del(key, callback);
 }
 
 module.exports = store;
+
 function store(options) {
   return new Leveldb(options);
 }

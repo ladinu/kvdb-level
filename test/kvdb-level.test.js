@@ -49,10 +49,16 @@ describe("#put", function(done) {
 
   after(function(done) {
     removeDb(db, done);
-  })
+  });
 
-  it("should store data", function(done) {
-    done();
+  describe("store data", function() {
+
+    it("should store with callback", function(done) {
+      db.put("uuid1", "somevalue", done);
+    });
+
+    it.skip("should store with streams", function(done) {
+    });
   });
 
   it.skip("should store piped data", function() {
@@ -66,5 +72,13 @@ describe("#put", function(done) {
 });
 
 describe.skip("#get", function() {
+  describe("get data", function() {
 
+    it("should get with callback", function(done) {
+      db.put("uuid1", "somevalue", done);
+    });
+
+    it.skip("should get with streams", function(done) {
+    });
+  });
 });
