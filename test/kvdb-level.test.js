@@ -2,7 +2,6 @@ var assert    = require('assert');
 var path      = require('path');
 var uuid      = require('uuid');
 var levelup   = require('levelup');
-var test      = require('tap').test;
 var store     = require('../');
 
 function log() {
