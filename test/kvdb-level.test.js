@@ -1,5 +1,7 @@
 var assert    = require('assert');
 var path      = require('path');
+var fs        = require('fs');
+
 var uuid      = require('uuid');
 var levelup   = require('levelup');
 var store     = require('../');
@@ -9,6 +11,11 @@ var log = function() {
   console.log.apply(this, ["DEBUG: "].concat(args));
 }
 
+
+var read = function(fname) {
+  var fname = path.join(__dirname, fname)
+  return fs.createReadStream(fname);
+}
 
 var getName = function(name) {
   return path.join(__dirname, name);
@@ -57,7 +64,14 @@ describe("#put", function(done) {
       db.put("key", new Buffer(32), done);
     });
 
-    it.skip("should store with streams", function(done) {
+    it("should store with streams", function(done) {
+      var put  = db.put("key");
+      var file = read('tf0');
+
+      put.on('error', done);
+      file.on('end', done);
+
+      file.pipe(put);
     });
   });
 
