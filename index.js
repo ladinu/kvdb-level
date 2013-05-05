@@ -1,8 +1,12 @@
 var util    = require('util');
 var path    = require('path');
 var events  = require('events');
-var levelup = require('levelup');
-var uuid    = require('uuid');
+var stream  = require('stream');
+
+var BufferStream = require('bufferstream');
+var duplexer     = require('duplexer');
+var levelup      = require('levelup');
+var uuid         = require('uuid');
 
 
 function someDBName() {
@@ -42,14 +46,45 @@ Leveldb.prototype.get = function(key, options, callback) {
 }
 
 Leveldb.prototype.put = function(key, value, options, callback) {
-  if (typeof(options) === 'function')
-    callback = options;
+  var self    = this;
+  var options = options || {};
 
-  if (callback) {
+  if (typeof(options) === 'function')
+    var callback = options;
+
+  if (callback) {                               // Callback API
     this.db.put(key, value, options, callback);
-  } else {
-    console.log(callback);
-    return this.db.put(key);
+  } else {                                      // Stream API
+    // First argument is `key` and second argument is `options`
+    // Treat second argument as the `options` object
+    var options = value || {"size": "flexible"};
+
+    // When using levelup/leveldown the value cannot be a stream
+    //
+    // level-store fix this by monotonically increasing the key
+    // and writing to that key whenever data is recevied
+    //
+    // Naive way to fix this is by buffering the stream and writing
+    // after the stream close (not really a good idea). This will
+    // need to get fixed in the future.
+
+    var catchStream = new BufferStream(options);
+    var putStream   = new stream.Readable();
+
+    putStream._read = function(){}
+
+    catchStream.on('end', function() {
+      var whenPut = function(err) {
+        if (err) putStream.emit('error', err);
+      }
+      self.put(key, catchStream.buffer, options, whenPut);
+    });
+
+    catchStream.on('error', function(err) {
+      putStream.emit('error', err);
+    });
+
+    return duplexer(catchStream, putStream);
   }
 }
 

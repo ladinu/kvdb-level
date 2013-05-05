@@ -54,7 +54,7 @@ describe("#put", function(done) {
   describe("store data", function() {
 
     it("should store with callback", function(done) {
-      db.put("uuid1", "somevalue", done);
+      db.put("key", new Buffer(32), done);
     });
 
     it.skip("should store with streams", function(done) {
