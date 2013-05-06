@@ -3,19 +3,20 @@ var path      = require('path');
 var fs        = require('fs');
 
 var uuid      = require('uuid');
+var equal     = require('equal-streams');
 var levelup   = require('levelup');
 var store     = require('../');
 
 var log = function() {
   var args = Array.prototype.slice.call(arguments);
-  console.log.apply(this, ["DEBUG: "].concat(args));
+  console.log.apply(this, ['@debug: '].concat(args));
 }
 
 
 var read = function(fname) {
-  var fname = path.join(__dirname, fname)
-  return fs.createReadStream(fname);
+  return fs.createReadStream(getName(fname));
 }
+
 
 var getName = function(name) {
   return path.join(__dirname, name);
@@ -31,9 +32,9 @@ var removeDb = function(db, done) {
   db.db.close(afterClosing);
 }
 
-describe("store()", function() {
+describe('store()', function() {
 
-  it("should create a db", function(done) {
+  it('should create a db', function(done) {
     var dbname = getName('db/test1');
     var db     = store({ 'dbname': dbname});
     
@@ -46,53 +47,60 @@ describe("store()", function() {
   });
 });
 
-describe("#put", function(done) {
-  var db;
-  before(function(done) {
-    db = store( {'dbname': getName('db/test2')} );
-    db.on('error', done);
-    db.on('ready', done);
+// Create a db
+var db;
+before(function(done) {
+  db = store( {'dbname': getName('db/test2')} );
+  db.on('error', done);
+  db.on('ready', done);
+});
+
+after(function(done) {
+  removeDb(db, done);
+});
+
+describe('#put', function(done) {
+  it('should store with callback', function(done) {
+    db.put('tstkey0', 'tst0string', done);
   });
 
-  after(function(done) {
-    removeDb(db, done);
-  });
+  it('should store with streams', function(done) {
+    var put  = db.put('tstkey1');
+    var file = read('tf0');
 
-  describe("store data", function() {
+    put.on('error', done);
+    file.on('end', done);
 
-    it("should store with callback", function(done) {
-      db.put("key", new Buffer(32), done);
-    });
-
-    it("should store with streams", function(done) {
-      var put  = db.put("key");
-      var file = read('tf0');
-
-      put.on('error', done);
-      file.on('end', done);
-
-      file.pipe(put);
-    });
-  });
-
-  it.skip("should store piped data", function() {
-  });
-
-  it.skip("should throw errors with callback", function() {
-  });
-
-  it.skip("should throw errors with pipes", function() {
+    file.pipe(put);
   });
 });
 
-describe.skip("#get", function() {
-  describe("get data", function() {
+describe('#get', function() {
 
-    it("should get with callback", function(done) {
-      db.put("uuid1", "somevalue", done);
+  it('should get with callback', function(done) {
+    db.get('tstkey0', function(err, value) {
+      if (!err) 
+        done(assert.equal(value, 'tst0string'));
+      else
+        done(err);
     });
+  });
 
-    it.skip("should get with streams", function(done) {
+  it.skip('should get with streams', function(done) {
+    var get = db.get('tstkey1');
+
+    get.on('error', done);
+    equal(get, read('tf0'), function(result, err) {
+      if (result) {
+        done()
+      } else if (err) {
+        done(err);
+      } else {
+        done(new Error('Diffrent streams were returned'));
+      }
     });
+  });
+
+  it.skip('should get all values', function(done) {
   });
 });

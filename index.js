@@ -38,8 +38,14 @@ function Leveldb(options) {
 util.inherits(Leveldb, events.EventEmitter);
 
 Leveldb.prototype.get = function(key, options, callback) {
+  var self    = this;
+  var options = options || {};
+
+  if (typeof(options) === 'function')
+    var callback = options;
+
   if (callback) {
-    this.db.get(key, callback);
+    this.db.get.apply(this.db, arguments);
   } else { // Return a stream
     return this.db.get(key);
   }
@@ -53,11 +59,11 @@ Leveldb.prototype.put = function(key, value, options, callback) {
     var callback = options;
 
   if (callback) {                               // Callback API
-    this.db.put(key, value, options, callback);
+    this.db.put.apply(this.db, arguments);
   } else {                                      // Stream API
     // First argument is `key` and second argument is `options`
     // Treat second argument as the `options` object
-    var options = value || {"size": "flexible"};
+    var options = value || { 'size': 'flexible' };
 
     // When using levelup/leveldown the value cannot be a stream
     //

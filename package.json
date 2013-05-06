@@ -13,7 +13,8 @@
     "uuid": "~1.4.1"
   },
   "devDependencies": {
-    "mocha": "*"
+    "mocha": "*",
+    "equal-streams": "*"
   },
   "scripts": {
     "test": "make test"
