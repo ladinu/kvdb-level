@@ -47,7 +47,16 @@ Leveldb.prototype.get = function(key, options, callback) {
   if (callback) {
     this.db.get.apply(this.db, arguments);
   } else { // Return a stream
-    return this.db.get(key);
+
+    // Again, bufferring is not really a good idea
+    // In the future this do things like level-store 
+    var stream = new BufferStream();
+
+    this.db.get(key, options, function(err, data) {
+      if (err) return stream.emit('error', err);
+      stream.end(data);
+    })
+    return stream;
   }
 }
 

@@ -3,7 +3,7 @@ var path      = require('path');
 var fs        = require('fs');
 
 var uuid      = require('uuid');
-var equal     = require('equal-streams');
+var compare   = require('equal-streams');
 var levelup   = require('levelup');
 var store     = require('../');
 
@@ -86,11 +86,11 @@ describe('#get', function() {
     });
   });
 
-  it.skip('should get with streams', function(done) {
+  it('should get with streams', function(done) {
     var get = db.get('tstkey1');
 
     get.on('error', done);
-    equal(get, read('tf0'), function(result, err) {
+    compare(get, read('tf0'), function(result, err) {
       if (result) {
         done()
       } else if (err) {
