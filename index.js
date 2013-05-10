@@ -120,6 +120,3 @@ module.exports = store;
 function store(options) {
   return new Leveldb(options);
 }
-
-
-

@@ -90,13 +90,13 @@ describe('#get', function() {
     var get = db.get('tstkey1');
 
     get.on('error', done);
-    compare(get, read('tf0'), function(err, result) {
-      if (result) {
+    compare(get, read('tf0'), function(err, equal) {
+      if (equal) {
         done()
       } else if (err) {
         done(err);
       } else {
-        done(new Error('Diffrent streams were returned'));
+        done(new Error('key stream differ'));
       }
     });
   });
@@ -120,7 +120,12 @@ describe('#get', function() {
     keyStream.on('error', done);
   });
 
-  it.skip('should get all values', function(done) {
-    var keyStream = db.get( {'values': true} );
+  it('should get all values', function(done) {
+    var valueStream = db.get( {'values': true, 'keys': false} );
+
+    compare(read('tf1'), valueStream, function(err, equal) {
+      if (err) return done(err);
+      if (equal) done(); else done(new Error('Value stream differ'));
+    });
   });
 });
