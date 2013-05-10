@@ -38,15 +38,21 @@ function Leveldb(options) {
 util.inherits(Leveldb, events.EventEmitter);
 
 Leveldb.prototype.get = function(key, options, callback) {
-  var self    = this;
-  var options = options || {};
+  var options  = options  || {'keys': false, 'values': true};
+  var key      = key      || false;
+  var callback = callback || null;
 
   if (typeof(options) === 'function')
-    var callback = options;
+    callback = options;
+
+  if ( (typeof(key) === 'object') && !(key instanceof Buffer) ) {
+    options = key;
+    key = false;
+  }
 
   if (callback) {
     this.db.get.apply(this.db, arguments);
-  } else { // Return a stream
+  } else if (key) { // Return a stream
 
     // Again, bufferring is not really a good idea
     // In the future this do things like level-store 
@@ -55,8 +61,10 @@ Leveldb.prototype.get = function(key, options, callback) {
     this.db.get(key, options, function(err, data) {
       if (err) return stream.emit('error', err);
       stream.end(data);
-    })
+    });
     return stream;
+  } else { // Get all keys or values
+    return this.db.createReadStream(options)
   }
 }
 

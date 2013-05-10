@@ -101,6 +101,26 @@ describe('#get', function() {
     });
   });
 
+  it('should get all keys', function(done) {
+    var keyStream = db.get( {'keys': true, 'values': false} );
+    var keyCount = 2;
+
+    keyStream.on('data', function(key) {  
+      if ( (key === 'tstkey1') || (key === 'tstkey0') )
+        --keyCount;
+    });
+
+    keyStream.on('end', function() {
+      if (keyCount === 0)
+        done()
+      else
+        done(new Error('Could not get all keys from db'));
+    });
+
+    keyStream.on('error', done);
+  });
+
   it.skip('should get all values', function(done) {
+    var keyStream = db.get( {'values': true} );
   });
 });
