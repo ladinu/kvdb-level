@@ -90,7 +90,7 @@ describe('#get', function() {
     var get = db.get('tstkey1');
 
     get.on('error', done);
-    compare(get, read('tf0'), function(result, err) {
+    compare(get, read('tf0'), function(err, result) {
       if (result) {
         done()
       } else if (err) {
