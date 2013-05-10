@@ -7,16 +7,9 @@ var compare   = require('equal-streams');
 var levelup   = require('levelup');
 var store     = require('../');
 
-var log = function() {
-  var args = Array.prototype.slice.call(arguments);
-  console.log.apply(this, ['@debug: '].concat(args));
-}
-
-
 var read = function(fname) {
   return fs.createReadStream(getName(fname));
 }
-
 
 var getName = function(name) {
   return path.join(__dirname, name);
