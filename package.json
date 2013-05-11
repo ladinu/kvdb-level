@@ -1,6 +1,6 @@
 {
   "name": "kvdb-level",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "LevelDB backend for kvdb",
   "main": "index.js",
   "directories": {
