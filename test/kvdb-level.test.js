@@ -122,3 +122,17 @@ describe('#get', function() {
     });
   });
 });
+
+describe('#del', function() {
+
+  it('should delete an item with callback', function(done) {
+    db.del('tstkey1', function(err) {
+      if (err) return done(err);
+
+      db.get('tstkey1', function(err, value) {
+        if (err) done(); else done(new Error('no error when a deleted item is accessed'));
+      });
+    });
+  });
+
+});

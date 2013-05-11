@@ -112,7 +112,7 @@ Leveldb.prototype.put = function(key, value, options, callback) {
 }
 
 Leveldb.prototype.del = function(key, options, callback) {
-  this.db.del(key, callback);
+  this.db.del.apply(this.db, arguments);
 }
 
 module.exports = store;
